@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  mongodb-Cont:
+    image: mongo:latest
+    container_name: mongodb-cont
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - .dbdata:/data/db
+
+
+#To run locaaly
+#  mongo "mongo url"
