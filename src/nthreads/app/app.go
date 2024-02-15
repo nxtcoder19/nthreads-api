@@ -51,13 +51,13 @@ func (s *ServerImpl) Init() {
 		return ctx.JSON(product)
 	})
 
-	app.Get("/api/product/get", func(ctx *fiber.Ctx) error {
-		products, err := s.threads.GetAllProducts(context.TODO())
-		if err != nil {
-			return err
-		}
-		return ctx.JSON(products)
-	})
+	//app.Get("/api/product/get", func(ctx *fiber.Ctx) error {
+	//	products, err := s.threads.GetAllProducts(context.TODO())
+	//	if err != nil {
+	//		return err
+	//	}
+	//	return ctx.JSON(products)
+	//})
 
 }
 

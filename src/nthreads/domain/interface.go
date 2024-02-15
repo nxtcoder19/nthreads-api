@@ -16,5 +16,5 @@ type Product struct {
 type NThreads interface {
 	Init(ctx context.Context) error
 	InsertProduct(ctx context.Context, title string, price int) (*Product, error)
-	GetAllProducts(ctx context.Context) ([]*Product, error)
+	//GetAllProducts(ctx context.Context) ([]*Product, error)
 }
