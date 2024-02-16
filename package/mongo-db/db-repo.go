@@ -30,7 +30,7 @@ type Query struct {
 
 type ID string
 
-type DBRepo[T Entity] interface {
+type DBRepo interface {
 	ConnectDB(ctx context.Context) error
 
 	InsertRecord(ctx context.Context, collectionName string, record any) (any, error)
@@ -44,7 +44,7 @@ type DBRepo[T Entity] interface {
 
 	GetCount(ctx context.Context, collectionName string, filter interface{}) (int64, error)
 
-	Find(ctx context.Context, collectionName string) ([]T, error)
+	Find(ctx context.Context, collectionName string) (*mongo.Cursor, error)
 	FindOne(ctx context.Context, collectionName string, filter interface{}) *mongo.SingleResult
 	FindByID(ctx context.Context, collectionName string, id string) *mongo.SingleResult
 	CreateCollection(ctx context.Context, collectionName string) error

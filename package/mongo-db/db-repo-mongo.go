@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type DB[T Entity] struct {
+type DB struct {
 	connectionString string
 	databaseName     string
 	client           *mongo.Client
@@ -38,7 +38,7 @@ func cursorToStruct[T any](ctx context.Context, curr *mongo.Cursor) ([]T, error)
 	return results, nil
 }
 
-func (d *DB[T]) ConnectDB(_ context.Context) error {
+func (d *DB) ConnectDB(_ context.Context) error {
 	clientOptions := options.Client().ApplyURI(d.connectionString)
 
 	// Create a new context with a timeout
@@ -69,18 +69,18 @@ func (d *DB[T]) ConnectDB(_ context.Context) error {
 	return nil
 }
 
-func (d *DB[T]) InsertRecord(ctx context.Context, collectionName string, record any) (any, error) {
+func (d *DB) InsertRecord(ctx context.Context, collectionName string, record any) (any, error) {
 	//_, err := d.db.Collection(collectionName).InsertOne(ctx, record)
 	record, err := d.db.Collection(collectionName).InsertOne(ctx, record)
 	return record, err
 }
 
-func (d *DB[T]) InsertMany(ctx context.Context, collectionName string, records []any) error {
+func (d *DB) InsertMany(ctx context.Context, collectionName string, records []any) error {
 	_, err := d.db.Collection(collectionName).InsertMany(ctx, records)
 	return err
 }
 
-func (d *DB[T]) UpdateRecord(ctx context.Context, collectionName string, filter, update interface{}) (*mongo.UpdateResult, error) {
+func (d *DB) UpdateRecord(ctx context.Context, collectionName string, filter, update interface{}) (*mongo.UpdateResult, error) {
 	result, err := d.db.Collection(collectionName).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (d *DB[T]) UpdateRecord(ctx context.Context, collectionName string, filter,
 	return result, nil
 }
 
-func (d *DB[T]) UpdateByID(ctx context.Context, collectionName string, id interface{}, update interface{}) (*mongo.UpdateResult, error) {
+func (d *DB) UpdateByID(ctx context.Context, collectionName string, id interface{}, update interface{}) (*mongo.UpdateResult, error) {
 	filter := bson.M{"_id": id}
 	result, err := d.db.Collection(collectionName).UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -97,7 +97,7 @@ func (d *DB[T]) UpdateByID(ctx context.Context, collectionName string, id interf
 	return result, nil
 }
 
-func (d *DB[T]) DeleteRecord(ctx context.Context, collectionName string, filter interface{}) (*mongo.DeleteResult, error) {
+func (d *DB) DeleteRecord(ctx context.Context, collectionName string, filter interface{}) (*mongo.DeleteResult, error) {
 	result, err := d.db.Collection(collectionName).DeleteOne(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (d *DB[T]) DeleteRecord(ctx context.Context, collectionName string, filter 
 	return result, nil
 }
 
-func (d *DB[T]) DeleteByID(ctx context.Context, collectionName string, id string) (*mongo.DeleteResult, error) {
+func (d *DB) DeleteByID(ctx context.Context, collectionName string, id string) (*mongo.DeleteResult, error) {
 	filter := bson.M{"id": id}
 	result, err := d.db.Collection(collectionName).DeleteOne(ctx, filter)
 	if err != nil {
@@ -114,39 +114,39 @@ func (d *DB[T]) DeleteByID(ctx context.Context, collectionName string, id string
 	return result, nil
 }
 
-func (d *DB[T]) GetCount(ctx context.Context, collectionName string, filter interface{}) (int64, error) {
+func (d *DB) GetCount(ctx context.Context, collectionName string, filter interface{}) (int64, error) {
 	count, err := d.db.Collection(collectionName).CountDocuments(ctx, filter)
 	return count, err
 }
 
-func (d *DB[T]) Find(ctx context.Context, collectionName string) ([]T, error) {
+func (d *DB) Find(ctx context.Context, collectionName string) (*mongo.Cursor, error) {
 	cursor, err := d.db.Collection(collectionName).Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	//return cursor, nil
-	return cursorToStruct[T](ctx, cursor)
+	return cursor, nil
+	//return cursorToStruct(ctx, cursor)
 }
 
-func (d *DB[T]) FindOne(ctx context.Context, collectionName string, filter interface{}) *mongo.SingleResult {
+func (d *DB) FindOne(ctx context.Context, collectionName string, filter interface{}) *mongo.SingleResult {
 	return d.db.Collection(collectionName).FindOne(ctx, filter)
 }
 
-func (d *DB[T]) FindByID(ctx context.Context, collectionName string, id string) *mongo.SingleResult {
+func (d *DB) FindByID(ctx context.Context, collectionName string, id string) *mongo.SingleResult {
 	//filter := bson.M{"_id": id}
 	filter := Filter{"id": id}
 	//err := d.db.Collection(collectionName).FindOne(ctx, filter).Decode(result)
 	return d.db.Collection(collectionName).FindOne(ctx, filter)
 }
 
-func (d *DB[T]) CreateCollection(ctx context.Context, collectionName string) error {
+func (d *DB) CreateCollection(ctx context.Context, collectionName string) error {
 	options := options.CreateCollection().SetCapped(false) // You can adjust the options as needed
 	err := d.db.CreateCollection(ctx, collectionName, options)
 	return err
 }
 
-func NewDB[T Entity](databaseName string, connectionUrl string) DBRepo[T] {
-	return &DB[T]{
+func NewDB(databaseName string, connectionUrl string) DBRepo {
+	return &DB{
 		databaseName:     databaseName,
 		connectionString: connectionUrl,
 		client:           nil,
