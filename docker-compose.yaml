@@ -1,16 +1,42 @@
-version: '3.7'
+version: '3'
 services:
-  mongodb-Cont:
-    image: mongo:latest
-    container_name: mongodb-cont
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+  redis:
+    image: redis:latest
+    container_name: redis_container
     ports:
-      - "27017:27017"
+      - "6379:6379"  # Redis client port
     volumes:
-      - .dbdata:/data/db
+      - redis:/data  # Mount a local directory for data persistence
+#  rethinkdb:
+#    image: rethinkdb:latest
+#    container_name: rethinkdb_container
+#    ports:
+#      - "8080:8080"  # RethinkDB web UI
+#      - "28015:28015"  # RethinkDB client driver port
+#      - "29015:29015"  # RethinkDB intracluster communication port
+#    volumes:
+#      - rethinkdb:/data  # Mount a local directory for data persistence
+#    environment:
+#      - RETHINKDB_DATA_DIR=/data
+#      - RETHINKDB_BIND=all
 
+volumes:
+  redis:
+  rethinkdb:
 
-#To run locaaly
-#  mongo "mongo url"
+#version: '3.7'
+#services:
+#  mongodb-Cont:
+#    image: mongo:latest
+#    container_name: mongodb-cont
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - .dbdata:/data/db
+#
+#
+##To run locaaly
+##  mongo "mongo url"

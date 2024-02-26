@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	mongodb "github.com/nxtcoder19/nthreads-backend/package/mongo-db"
+	"github.com/nxtcoder19/nthreads-backend/package/redis"
 	"github.com/nxtcoder19/nthreads-backend/src/nthreads/app"
-	"github.com/nxtcoder19/nthreads-backend/src/nthreads/domain"
+	nthreads "github.com/nxtcoder19/nthreads-backend/src/nthreads/domain"
 	"os"
 )
 
 func main() {
 	mongoUrl := os.Getenv("MONGO_URI")
-	db := mongodb.NewDB("test", mongoUrl)
+	db := mongodb.NewDB("n-threads-db", mongoUrl)
 	err := db.ConnectDB(context.TODO())
 	if err != nil {
 		panic(err)
@@ -21,7 +22,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	server := app.NewServer(threads)
+
+	sessionCache := redis.NewRedisCache("localhost:6379")
+
+	server := app.NewServer(threads, sessionCache)
 	server.Init()
 	err = server.Start(":3002")
 	if err != nil {
