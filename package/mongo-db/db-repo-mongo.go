@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/nxtcoder19/nthreads-backend/package/errors"
+	"github.com/nxtcoder19/nthreads-backend/package/functions"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strings"
 	"time"
 )
 
@@ -36,6 +39,14 @@ func cursorToStruct[T any](ctx context.Context, curr *mongo.Cursor) ([]T, error)
 	}
 
 	return results, nil
+}
+
+func (d *DB) NewId() ID {
+	id, e := functions.CleanerNanoid(28)
+	if e != nil {
+		panic(errors.Newf("could not get cleanerNanoid()"))
+	}
+	return ID(fmt.Sprintf("%s-%s", "id", strings.ToLower(id)))
 }
 
 func (d *DB) ConnectDB(_ context.Context) error {
@@ -80,16 +91,20 @@ func (d *DB) InsertMany(ctx context.Context, collectionName string, records []an
 	return err
 }
 
-func (d *DB) UpdateRecord(ctx context.Context, collectionName string, filter, update interface{}) (*mongo.UpdateResult, error) {
-	result, err := d.db.Collection(collectionName).UpdateOne(ctx, filter, update)
+func (d *DB) UpdateMany(ctx context.Context, collectionName string, filter Filter, update Filter) error {
+	_, err := d.db.Collection(collectionName).UpdateMany(
+		ctx,
+		filter,
+		bson.M{"$set": update},
+	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, nil
+	return nil
 }
 
 func (d *DB) UpdateByID(ctx context.Context, collectionName string, id interface{}, update interface{}) (*mongo.UpdateResult, error) {
-	filter := bson.M{"_id": id}
+	filter := bson.M{"id": id}
 	result, err := d.db.Collection(collectionName).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
@@ -97,12 +112,12 @@ func (d *DB) UpdateByID(ctx context.Context, collectionName string, id interface
 	return result, nil
 }
 
-func (d *DB) DeleteRecord(ctx context.Context, collectionName string, filter interface{}) (*mongo.DeleteResult, error) {
-	result, err := d.db.Collection(collectionName).DeleteOne(ctx, filter)
+func (d *DB) DeleteRecord(ctx context.Context, collectionName string, filter Filter) error {
+	_, err := d.db.Collection(collectionName).DeleteOne(ctx, filter)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, nil
+	return nil
 }
 
 func (d *DB) DeleteByID(ctx context.Context, collectionName string, id string) (*mongo.DeleteResult, error) {
@@ -128,15 +143,15 @@ func (d *DB) Find(ctx context.Context, collectionName string) (*mongo.Cursor, er
 	//return cursorToStruct(ctx, cursor)
 }
 
-func (d *DB) FindOne(ctx context.Context, collectionName string, filter interface{}) *mongo.SingleResult {
-	return d.db.Collection(collectionName).FindOne(ctx, filter)
+func (d *DB) FindOne(ctx context.Context, collectionName string, result any, filter Filter) error {
+	return d.db.Collection(collectionName).FindOne(ctx, filter).Decode(result)
 }
 
-func (d *DB) FindByID(ctx context.Context, collectionName string, id string) *mongo.SingleResult {
+func (d *DB) FindByID(ctx context.Context, collectionName string, result any, id string) error {
 	//filter := bson.M{"_id": id}
 	filter := Filter{"id": id}
 	//err := d.db.Collection(collectionName).FindOne(ctx, filter).Decode(result)
-	return d.db.Collection(collectionName).FindOne(ctx, filter)
+	return d.db.Collection(collectionName).FindOne(ctx, filter).Decode(result)
 }
 
 func (d *DB) CreateCollection(ctx context.Context, collectionName string) error {

@@ -33,19 +33,21 @@ type ID string
 type DBRepo interface {
 	ConnectDB(ctx context.Context) error
 
+	NewId() ID
+
 	InsertRecord(ctx context.Context, collectionName string, record any) (any, error)
 	InsertMany(ctx context.Context, collectionName string, record []any) error
 
-	UpdateRecord(ctx context.Context, collectionName string, filter any, update interface{}) (*mongo.UpdateResult, error)
+	UpdateMany(ctx context.Context, collectionName string, filter Filter, update Filter) error
 	UpdateByID(ctx context.Context, collectionName string, id interface{}, update interface{}) (*mongo.UpdateResult, error)
 
-	DeleteRecord(ctx context.Context, collectionName string, filter interface{}) (*mongo.DeleteResult, error)
+	DeleteRecord(ctx context.Context, collectionName string, filter Filter) error
 	DeleteByID(ctx context.Context, collectionName string, id string) (*mongo.DeleteResult, error)
 
 	GetCount(ctx context.Context, collectionName string, filter interface{}) (int64, error)
 
 	Find(ctx context.Context, collectionName string) (*mongo.Cursor, error)
-	FindOne(ctx context.Context, collectionName string, filter interface{}) *mongo.SingleResult
-	FindByID(ctx context.Context, collectionName string, id string) *mongo.SingleResult
+	FindOne(ctx context.Context, collectionName string, result any, filter Filter) error
+	FindByID(ctx context.Context, collectionName string, result any, id string) error
 	CreateCollection(ctx context.Context, collectionName string) error
 }

@@ -1,4 +1,4 @@
-package nthreads
+package domain
 
 import (
 	"context"

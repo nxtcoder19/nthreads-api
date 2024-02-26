@@ -1,4 +1,4 @@
-package nthreads
+package domain
 
 import (
 	"context"
@@ -11,10 +11,14 @@ type Impl struct {
 
 const (
 	ProductTable string = "products"
+	AuthTable    string = "auth"
+	TodoTable    string = "todo"
 )
 
 func (i *Impl) Init(ctx context.Context) error {
-	err := i.db.CreateCollection(ctx, "products")
+	//err := i.db.CreateCollection(ctx, "products")
+	err := i.db.CreateCollection(ctx, AuthTable)
+	err = i.db.CreateCollection(ctx, TodoTable)
 	if err != nil {
 		// Ignore error
 		return nil
