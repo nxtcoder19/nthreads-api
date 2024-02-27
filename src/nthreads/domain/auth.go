@@ -28,21 +28,21 @@ func (i *Impl) SignUp(ctx context.Context, firstName string, lastName string, em
 	return &user, nil
 }
 
-func (i *Impl) Login(ctx context.Context, email string, password string) (res string, err error) {
+func (i *Impl) Login(ctx context.Context, email string, password string) (res bool, err error) {
 	verifyPassword := "verify" + password
 	encodedString := functions.GetMD5Hash(verifyPassword)
 
 	var user entities.User
 	err = i.db.FindOne(ctx, AuthTable, &user, mongo_db.Filter{"email": email})
 	if err != nil {
-		return "", err
+		return false, err
 	}
 
 	//fmt.Println("user is", user)
 	if user.VerifyPassword != encodedString {
-		return "wrong credentials", err
+		return false, err
 	}
-	return "logged in successfully", nil
+	return true, nil
 }
 
 func (i *Impl) UpdateUser(ctx context.Context, email string, firstName string, lastName string) (*entities.User, error) {
