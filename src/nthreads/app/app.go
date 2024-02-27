@@ -122,7 +122,7 @@ func (s *ServerImpl) Init() {
 		})
 
 		return ctx.JSON(struct {
-			Message string `json:"message"`
+			Message bool `json:"message"`
 		}{
 			Message: loginMessage,
 		})
