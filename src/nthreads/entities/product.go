@@ -1,13 +1,14 @@
 package entities
 
-import (
-	mongo_db "github.com/nxtcoder19/nthreads-backend/package/mongo-db"
-	"time"
-)
+import mongo_db "github.com/nxtcoder19/nthreads-backend/package/mongo-db"
 
 type Product struct {
-	mongo_db.BaseEntity `json:",inline" graphql:"noinput"`
-	Title               string    `json:"title"`
-	Price               int       `json:"price"`
-	Time                time.Time `json:"time"`
+	Id          mongo_db.ID `json:"id"`
+	Name        string      `json:"name"`
+	Price       string      `json:"price"`
+	ImageUrl    string      `json:"image_url"`
+	Date        string      `json:"date"`
+	Description string      `json:"description"`
+	Warranty    string      `json:"warranty"`
+	Place       string      `json:"place"`
 }

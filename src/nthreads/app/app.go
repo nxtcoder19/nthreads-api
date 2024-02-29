@@ -60,22 +60,22 @@ func (s *ServerImpl) Init() {
 		AllowMethods: "*",
 	}))
 
-	app.Post("/api/product/create", func(ctx *fiber.Ctx) error {
-		data := struct {
-			Title string `json:"title"`
-			Price int    `json:"price"`
-		}{}
-		body := ctx.Body()
-		err := json.Unmarshal(body, &data)
-		if err != nil {
-			return err
-		}
-		product, err := s.threads.InsertProduct(context.TODO(), data.Title, data.Price)
-		if err != nil {
-			return err
-		}
-		return ctx.JSON(product)
-	})
+	//app.Post("/api/product/create", func(ctx *fiber.Ctx) error {
+	//	data := struct {
+	//		Title string `json:"title"`
+	//		Price int    `json:"price"`
+	//	}{}
+	//	body := ctx.Body()
+	//	err := json.Unmarshal(body, &data)
+	//	if err != nil {
+	//		return err
+	//	}
+	//	product, err := s.threads.InsertProduct(context.TODO(), data.Title, data.Price)
+	//	if err != nil {
+	//		return err
+	//	}
+	//	return ctx.JSON(product)
+	//})
 
 	//app.Get("/api/product/get", func(ctx *fiber.Ctx) error {
 	//	products, err := s.threads.GetAllProducts(context.TODO())
@@ -176,6 +176,7 @@ func (s *ServerImpl) Init() {
 		})
 	})
 
+	/// Todo
 	app.Post("/api/todo/create", func(ctx *fiber.Ctx) error {
 		data := struct {
 			Title       string `json:"title"`
@@ -236,6 +237,85 @@ func (s *ServerImpl) Init() {
 			Message string `json:"message"`
 		}{
 			Message: deletedMessage,
+		})
+	})
+
+	/// Products
+	app.Post("/api/product/create", func(ctx *fiber.Ctx) error {
+		data := struct {
+			Name        string `json:"name"`
+			Price       string `json:"price"`
+			ImageUrl    string `json:"image_url"`
+			Date        string `json:"date"`
+			Description string `json:"description"`
+			Warranty    string `json:"warranty"`
+			Place       string `json:"place"`
+		}{}
+		body := ctx.Body()
+		err := json.Unmarshal(body, &data)
+		if err != nil {
+			return err
+		}
+		//fmt.Println("data", data)
+		product, err := s.threads.CreateProduct(context.TODO(), data.Name, data.Price, data.ImageUrl, data.Date, data.Description, data.Warranty, data.Place)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(product)
+	})
+
+	app.Put("/api/product/update/:id", func(ctx *fiber.Ctx) error {
+		data := struct {
+			Name        string `json:"name"`
+			Price       string `json:"price"`
+			ImageUrl    string `json:"image_url"`
+			Date        string `json:"date"`
+			Description string `json:"description"`
+			Warranty    string `json:"warranty"`
+			Place       string `json:"place"`
+		}{}
+		body := ctx.Body()
+		err := json.Unmarshal(body, &data)
+		if err != nil {
+			return err
+		}
+		UpdatedProduct, err := s.threads.UpdateProduct(context.TODO(), ctx.Params("id"), data.Name, data.Price, data.ImageUrl, data.Date, data.Description, data.Warranty, data.Place)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(UpdatedProduct)
+	})
+
+	app.Get("/api/product/get/:id", func(ctx *fiber.Ctx) error {
+		product, err := s.threads.GetProduct(context.TODO(), ctx.Params("id"))
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(product)
+	})
+
+	app.Get("/api/product/get", func(ctx *fiber.Ctx) error {
+		products, err := s.threads.GetProducts(context.TODO())
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(products)
+	})
+
+	app.Delete("/api/product/delete/:id", func(ctx *fiber.Ctx) error {
+		productStatus, err := s.threads.DeleteProduct(context.TODO(), ctx.Params("id"))
+		if err != nil {
+			return err
+		}
+
+		if productStatus == false {
+			return ctx.SendStatus(400)
+		}
+
+		return ctx.JSON(struct {
+			Status bool `json:"status"`
+		}{
+			Status: productStatus,
 		})
 	})
 
