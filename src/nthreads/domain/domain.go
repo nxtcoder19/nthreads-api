@@ -19,6 +19,7 @@ func (i *Impl) Init(ctx context.Context) error {
 	//err := i.db.CreateCollection(ctx, "products")
 	err := i.db.CreateCollection(ctx, AuthTable)
 	err = i.db.CreateCollection(ctx, TodoTable)
+	err = i.db.CreateCollection(ctx, ProductTable)
 	if err != nil {
 		// Ignore error
 		return nil
