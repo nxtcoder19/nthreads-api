@@ -33,8 +33,8 @@ type NThreads interface {
 	DeleteTodo(ctx context.Context, id string) (string, error)
 
 	/// Product
-	CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string) (*entities.Product, error)
-	UpdateProduct(ctx context.Context, id string, name string, price string, imageUrl string, date string, description string, warranty string, place string) (*entities.Product, error)
+	CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string, extraImages []string) (*entities.Product, error)
+	UpdateProduct(ctx context.Context, id string, price string, imageUrl string, date string, warranty string, place string) (*entities.Product, error)
 	GetProduct(ctx context.Context, id string) (*entities.Product, error)
 	GetProducts(ctx context.Context) ([]*entities.Product, error)
 	DeleteProduct(ctx context.Context, id string) (bool, error)

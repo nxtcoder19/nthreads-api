@@ -7,7 +7,7 @@ import (
 	"github.com/nxtcoder19/nthreads-backend/src/nthreads/entities"
 )
 
-func (i *Impl) CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string) (*entities.Product, error) {
+func (i *Impl) CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string, extraImages []string) (*entities.Product, error) {
 	id := i.db.NewId()
 	product := entities.Product{
 		Id:          id,
@@ -18,6 +18,7 @@ func (i *Impl) CreateProduct(ctx context.Context, name string, price string, ima
 		Description: description,
 		Warranty:    warranty,
 		Place:       place,
+		ExtraImages: extraImages,
 	}
 	_, err := i.db.InsertRecord(ctx, ProductTable, product)
 	if err != nil {
@@ -26,19 +27,17 @@ func (i *Impl) CreateProduct(ctx context.Context, name string, price string, ima
 	return &product, nil
 }
 
-func (i *Impl) UpdateProduct(ctx context.Context, id string, name string, price string, imageUrl string, date string, description string, warranty string, place string) (*entities.Product, error) {
+func (i *Impl) UpdateProduct(ctx context.Context, id string, price string, imageUrl string, date string, warranty string, place string) (*entities.Product, error) {
 	err := i.db.UpdateMany(
 		ctx,
 		ProductTable,
 		mongo_db.Filter{"id": id},
 		mongo_db.Filter{
-			"name":        name,
-			"price":       price,
-			"image_url":   imageUrl,
-			"date":        date,
-			"description": description,
-			"warranty":    warranty,
-			"place":       place,
+			"price":     price,
+			"image_url": imageUrl,
+			"date":      date,
+			"warranty":  warranty,
+			"place":     place,
 		},
 	)
 
