@@ -243,13 +243,14 @@ func (s *ServerImpl) Init() {
 	/// Products
 	app.Post("/api/product/create", func(ctx *fiber.Ctx) error {
 		data := struct {
-			Name        string `json:"name"`
-			Price       string `json:"price"`
-			ImageUrl    string `json:"image_url"`
-			Date        string `json:"date"`
-			Description string `json:"description"`
-			Warranty    string `json:"warranty"`
-			Place       string `json:"place"`
+			Name        string   `json:"name"`
+			Price       string   `json:"price"`
+			ImageUrl    string   `json:"image_url"`
+			Date        string   `json:"date"`
+			Description string   `json:"description"`
+			Warranty    string   `json:"warranty"`
+			Place       string   `json:"place"`
+			ExtraImages []string `json:"extra_images"`
 		}{}
 		body := ctx.Body()
 		err := json.Unmarshal(body, &data)
@@ -257,7 +258,7 @@ func (s *ServerImpl) Init() {
 			return err
 		}
 		//fmt.Println("data", data)
-		product, err := s.threads.CreateProduct(context.TODO(), data.Name, data.Price, data.ImageUrl, data.Date, data.Description, data.Warranty, data.Place)
+		product, err := s.threads.CreateProduct(context.TODO(), data.Name, data.Price, data.ImageUrl, data.Date, data.Description, data.Warranty, data.Place, data.ExtraImages)
 		if err != nil {
 			return err
 		}
@@ -266,20 +267,18 @@ func (s *ServerImpl) Init() {
 
 	app.Put("/api/product/update/:id", func(ctx *fiber.Ctx) error {
 		data := struct {
-			Name        string `json:"name"`
-			Price       string `json:"price"`
-			ImageUrl    string `json:"image_url"`
-			Date        string `json:"date"`
-			Description string `json:"description"`
-			Warranty    string `json:"warranty"`
-			Place       string `json:"place"`
+			Price    string `json:"price"`
+			ImageUrl string `json:"image_url"`
+			Date     string `json:"date"`
+			Warranty string `json:"warranty"`
+			Place    string `json:"place"`
 		}{}
 		body := ctx.Body()
 		err := json.Unmarshal(body, &data)
 		if err != nil {
 			return err
 		}
-		UpdatedProduct, err := s.threads.UpdateProduct(context.TODO(), ctx.Params("id"), data.Name, data.Price, data.ImageUrl, data.Date, data.Description, data.Warranty, data.Place)
+		UpdatedProduct, err := s.threads.UpdateProduct(context.TODO(), ctx.Params("id"), data.Price, data.ImageUrl, data.Date, data.Warranty, data.Place)
 		if err != nil {
 			return err
 		}

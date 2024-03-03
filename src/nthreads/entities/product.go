@@ -11,4 +11,5 @@ type Product struct {
 	Description string      `json:"description"`
 	Warranty    string      `json:"warranty"`
 	Place       string      `json:"place"`
+	ExtraImages []string    `json:"extra_images"`
 }

@@ -3,6 +3,10 @@ version: 3
 dotenv:
   - .secrets/env
 
+vars:
+  ImagePrefix: "piyushacet"
+  Image: "{{.ImagePrefix}}/nthreads_api_v1.0.0:latest"
+
 tasks:
 
   nthreads:run:
@@ -10,3 +14,23 @@ tasks:
     dir: ./src/nthreads
     cmds:
       - go run main.go
+
+  docker:
+    cmds:
+      - task: docker:build
+      - task: docker:push
+
+  docker:build:
+    interactive: true
+    cmds:
+      - docker build -t {{.Image}} .
+
+  docker:run:
+    interactive: true
+    cmds:
+      - docker run -e MONGO_URI=$MONGO_URI -p 3002:3002 {{.Image}}
+
+  docker:push:
+    interactive: true
+    cmds:
+      - docker push {{.Image}}
