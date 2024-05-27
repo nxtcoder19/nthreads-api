@@ -57,7 +57,7 @@ func (i *Impl) GetTodo(ctx context.Context, id string) (*entities.Todo, error) {
 
 func (i *Impl) GetTodos(ctx context.Context) ([]*entities.Todo, error) {
 	todos := make([]*entities.Todo, 0)
-	cursor, err := i.db.Find(ctx, TodoTable)
+	cursor, err := i.db.Find(ctx, TodoTable, mongo_db.Filter{})
 	if err != nil {
 		return nil, err
 	}

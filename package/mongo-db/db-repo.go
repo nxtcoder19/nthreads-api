@@ -46,7 +46,7 @@ type DBRepo interface {
 
 	GetCount(ctx context.Context, collectionName string, filter interface{}) (int64, error)
 
-	Find(ctx context.Context, collectionName string) (*mongo.Cursor, error)
+	Find(ctx context.Context, collectionName string, filter Filter) (*mongo.Cursor, error)
 	FindOne(ctx context.Context, collectionName string, result any, filter Filter) error
 	FindByID(ctx context.Context, collectionName string, result any, id string) error
 	CreateCollection(ctx context.Context, collectionName string) error

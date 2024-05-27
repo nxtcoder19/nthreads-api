@@ -34,3 +34,8 @@ tasks:
     interactive: true
     cmds:
       - docker push {{.Image}}
+
+  docker:compose:
+    interactive: true
+    cmds:
+      - docker-compose up -d
