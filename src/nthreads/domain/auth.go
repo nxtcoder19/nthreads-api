@@ -66,6 +66,16 @@ func (i *Impl) UpdateUser(ctx context.Context, email string, firstName string, l
 	return &user, nil
 }
 
+func (i *Impl) GetUser(ctx context.Context, email string) (*entities.User, error) {
+	var user entities.User
+	err := i.db.FindOne(ctx, AuthTable, &user, mongo_db.Filter{"email": email})
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (i *Impl) DeleteUser(ctx context.Context, email string) (string, error) {
 	var user entities.User
 	err := i.db.FindOne(ctx, AuthTable, &user, mongo_db.Filter{"email": email})

@@ -14,5 +14,7 @@ type User struct {
 }
 
 type SessionData struct {
-	Email string `json:"email"`
+	UserEmail string `json:"userEmail"`
+	UserName  string `json:"userName"`
+	UserId    string `json:"userId"`
 }

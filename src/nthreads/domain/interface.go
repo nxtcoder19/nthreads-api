@@ -24,6 +24,7 @@ type NThreads interface {
 	Login(ctx context.Context, email string, password string) (res bool, err error)
 	UpdateUser(ctx context.Context, email string, firstName string, lastName string) (*entities.User, error)
 	DeleteUser(ctx context.Context, email string) (string, error)
+	GetUser(ctx context.Context, email string) (*entities.User, error)
 
 	/// Todo
 	CreateTodo(ctx context.Context, title string, description string) (*entities.Todo, error)
@@ -33,9 +34,35 @@ type NThreads interface {
 	DeleteTodo(ctx context.Context, id string) (string, error)
 
 	/// Product
-	CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string, extraImages []string) (*entities.Product, error)
-	UpdateProduct(ctx context.Context, id string, price string, imageUrl string, date string, warranty string, place string) (*entities.Product, error)
+	CreateProduct(ctx context.Context, productIn *entities.Product) (*entities.Product, error)
+	//UpdateProduct(ctx context.Context, id string, price string, imageUrl string, date string, warranty string, place string) (*entities.Product, error)
+	UpdateProduct(ctx context.Context, id string, productIn *entities.Product) (*entities.Product, error)
 	GetProduct(ctx context.Context, id string) (*entities.Product, error)
 	GetProducts(ctx context.Context) ([]*entities.Product, error)
 	DeleteProduct(ctx context.Context, id string) (bool, error)
+
+	/// Product Category
+	CreateProductCategory(ctx context.Context, name string, title string, description string, imageUrl string) (*entities.ProductCategory, error)
+	UpdateProductCategory(ctx context.Context, id string, name string, title string, description string, imageUrl string) (*entities.ProductCategory, error)
+	GetProductCategory(ctx context.Context, id string) (*entities.ProductCategory, error)
+	GetProductCategories(ctx context.Context) ([]*entities.ProductCategory, error)
+	DeleteProductCategory(ctx context.Context, id string) (bool, error)
+
+	/// Cart Item
+	AddItemToCart(ctx context.Context, product *entities.Product, quantity int) (*entities.CartItem, error)
+	UpdateCartItem(ctx context.Context, id string, quantity int) (*entities.CartItem, error)
+	RemoveCartItem(ctx context.Context, id string) (bool, error)
+	GetCartItems(ctx context.Context) ([]*entities.CartItem, error)
+
+	/// Order Item
+	AddItemToOrder(ctx context.Context, product *entities.Product) (*entities.OrderItem, error)
+	GetOrderItem(ctx context.Context, id string) (*entities.OrderItem, error)
+	GetOrderItems(ctx context.Context) ([]*entities.OrderItem, error)
+
+	/// Address
+	CreateAddress(ctx context.Context, addressIn *entities.Address) (*entities.Address, error)
+	UpdateAddress(ctx context.Context, id string, addressIn *entities.Address) (*entities.Address, error)
+	GetAddress(ctx context.Context, id string) (*entities.Address, error)
+	GetAddresses(ctx context.Context) ([]*entities.Address, error)
+	DeleteAddress(ctx context.Context, id string) (bool, error)
 }

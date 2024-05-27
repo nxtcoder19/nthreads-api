@@ -3,46 +3,67 @@ package domain
 import (
 	"context"
 	"fmt"
-	mongo_db "github.com/nxtcoder19/nthreads-backend/package/mongo-db"
+	mongodb "github.com/nxtcoder19/nthreads-backend/package/mongo-db"
 	"github.com/nxtcoder19/nthreads-backend/src/nthreads/entities"
 )
 
-func (i *Impl) CreateProduct(ctx context.Context, name string, price string, imageUrl string, date string, description string, warranty string, place string, extraImages []string) (*entities.Product, error) {
+func (i *Impl) CreateProduct(ctx context.Context, productIn *entities.Product) (*entities.Product, error) {
 	id := i.db.NewId()
-	product := entities.Product{
-		Id:          id,
-		Name:        name,
-		Price:       price,
-		ImageUrl:    imageUrl,
-		Date:        date,
-		Description: description,
-		Warranty:    warranty,
-		Place:       place,
-		ExtraImages: extraImages,
+	nProduct := &entities.Product{
+		Id:                  id,
+		ProductCategoryName: productIn.ProductCategoryName,
+		Name:                productIn.Name,
+		Price:               productIn.Price,
+		ImageUrl:            productIn.ImageUrl,
+		Date:                productIn.Date,
+		Description:         productIn.Description,
+		Warranty:            productIn.Warranty,
+		Place:               productIn.Place,
+		AvailableColors:     productIn.AvailableColors,
+		AvailableSizes:      productIn.AvailableSizes,
+		Color:               productIn.Color,
+		Size:                productIn.Size,
+		ExtraImages:         productIn.ExtraImages,
+		AvailableOffers:     productIn.AvailableOffers,
+		QuestionsAnswers:    productIn.QuestionsAnswers,
+		ReviewData:          productIn.ReviewData,
+		Tags:                productIn.Tags,
 	}
-	_, err := i.db.InsertRecord(ctx, ProductTable, product)
+	_, err := i.db.InsertRecord(ctx, ProductTable, nProduct)
 	if err != nil {
 		return nil, err
 	}
-	return &product, nil
+	return nProduct, nil
 }
 
-func (i *Impl) UpdateProduct(ctx context.Context, id string, price string, imageUrl string, date string, warranty string, place string) (*entities.Product, error) {
+func (i *Impl) UpdateProduct(ctx context.Context, id string, productIn *entities.Product) (*entities.Product, error) {
 	err := i.db.UpdateMany(
 		ctx,
 		ProductTable,
-		mongo_db.Filter{"id": id},
-		mongo_db.Filter{
-			"price":     price,
-			"image_url": imageUrl,
-			"date":      date,
-			"warranty":  warranty,
-			"place":     place,
+		mongodb.Filter{"id": id},
+		mongodb.Filter{
+			"productCategoryName": productIn.ProductCategoryName,
+			"name":                productIn.Name,
+			"price":               productIn.Price,
+			"imageUrl":            productIn.ImageUrl,
+			"date":                productIn.Date,
+			"description":         productIn.Description,
+			"warranty":            productIn.Warranty,
+			"place":               productIn.Place,
+			//"availableColors":     productIn.AvailableColors,
+			//"availableSizes":      productIn.AvailableSizes,
+			"color": productIn.Color,
+			//"size":                productIn.Size,
+			"extraImages": productIn.ExtraImages,
+			//"availableOffers":     productIn.AvailableOffers,
+			"questionsAnswers": productIn.QuestionsAnswers,
+			//"reviewData":          productIn.ReviewData,
+			//"tags":                productIn.Tags,
 		},
 	)
 
 	var product entities.Product
-	err = i.db.FindOne(ctx, ProductTable, &product, mongo_db.Filter{"id": id})
+	err = i.db.FindOne(ctx, ProductTable, &product, mongodb.Filter{"id": id})
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +73,7 @@ func (i *Impl) UpdateProduct(ctx context.Context, id string, price string, image
 
 func (i *Impl) GetProduct(ctx context.Context, id string) (*entities.Product, error) {
 	var product entities.Product
-	err := i.db.FindOne(ctx, ProductTable, &product, mongo_db.Filter{"id": id})
+	err := i.db.FindOne(ctx, ProductTable, &product, mongodb.Filter{"id": id})
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +83,7 @@ func (i *Impl) GetProduct(ctx context.Context, id string) (*entities.Product, er
 
 func (i *Impl) GetProducts(ctx context.Context) ([]*entities.Product, error) {
 	products := make([]*entities.Product, 0)
-	cursor, err := i.db.Find(ctx, ProductTable)
+	cursor, err := i.db.Find(ctx, ProductTable, mongodb.Filter{})
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +106,13 @@ func (i *Impl) GetProducts(ctx context.Context) ([]*entities.Product, error) {
 }
 
 func (i *Impl) DeleteProduct(ctx context.Context, id string) (bool, error) {
-	var todo entities.Product
-	err := i.db.FindOne(ctx, ProductTable, &todo, mongo_db.Filter{"id": id})
+	var product entities.Product
+	err := i.db.FindOne(ctx, ProductTable, &product, mongodb.Filter{"id": id})
 	if err != nil {
 		return false, err
 	}
 
-	err = i.db.DeleteRecord(ctx, ProductTable, mongo_db.Filter{"id": id})
+	err = i.db.DeleteRecord(ctx, ProductTable, mongodb.Filter{"id": id})
 	if err != nil {
 		return false, err
 	}

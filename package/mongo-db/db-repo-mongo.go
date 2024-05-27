@@ -134,8 +134,8 @@ func (d *DB) GetCount(ctx context.Context, collectionName string, filter interfa
 	return count, err
 }
 
-func (d *DB) Find(ctx context.Context, collectionName string) (*mongo.Cursor, error) {
-	cursor, err := d.db.Collection(collectionName).Find(ctx, bson.M{})
+func (d *DB) Find(ctx context.Context, collectionName string, filter Filter) (*mongo.Cursor, error) {
+	cursor, err := d.db.Collection(collectionName).Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
